@@ -1,17 +1,47 @@
 import os
 import logging
+import logging.config
 from dotenv import load_dotenv
 
 def setup_logging():
     # Ensure the logs directory exists
-    os.makedirs('logs', exist_ok=True)
+    logs_dir = 'logs'
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+
+    # Define logging configuration
+    logging_config = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'standard': {
+                'format': '%(asctime)s - %(levelname)s - %(message)s'
+            },
+        },
+        'handlers': {
+            'file_handler': {
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(logs_dir, 'app.log'),
+                'formatter': 'standard',
+                'level': 'DEBUG',
+            },
+            'console_handler': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'standard',
+                'level': 'INFO',
+            },
+        },
+        'loggers': {
+            '': {
+                'handlers': ['file_handler', 'console_handler'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+        },
+    }
 
     # Configure logging
-    logging.basicConfig(
-        filename='logs/app.log',
-        level=logging.DEBUG,
-        format='%(asctime)s - %(levelname)s - %(message)s'
-    )
+    logging.config.dictConfig(logging_config)
 
 def load_environment_variables():
     # Load environment variables from .env file
@@ -28,4 +58,5 @@ def load_environment_variables():
 if __name__ == "__main__":
     setup_logging()
     load_environment_variables()
+    logging.info("This is an info message")
     logging.error("This is an error message")
