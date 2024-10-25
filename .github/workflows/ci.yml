@@ -20,8 +20,6 @@ jobs:
           pip install -r requirements.txt
       - name: Create logs directory
         run: mkdir -p logs
-      - name: Run environment script
-        run: python environment.py
       - name: Run tests
         run: pytest
         env:
